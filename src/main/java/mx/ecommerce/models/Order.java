@@ -1,11 +1,13 @@
 package mx.ecommerce.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
-@Entity(name = "`order`") // This tells Hibernate to make a table out of this class
+@Entity(name = "\"order\"")
 public class Order {
 
     @Id
@@ -14,10 +16,9 @@ public class Order {
 
     private Integer client_id;
 
-    @Column(name = "`status`")
     private String status;
     private String payment_method;
-    private Float total;
+    private Double total;
 
     private Timestamp created_at;
 
@@ -53,11 +54,11 @@ public class Order {
         this.payment_method = payment_method;
     }
 
-    public Float getTotal() {
+    public Double getTotal() {
         return total;
     }
 
-    public void setTotal(Float total) {
+    public void setTotal(Double total) {
         this.total = total;
     }
 

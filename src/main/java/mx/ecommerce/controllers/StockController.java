@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import mx.ecommerce.models.Stock;
 import mx.ecommerce.repositories.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,7 +35,7 @@ public class StockController {
         return result;
     }
 
-    @GetMapping(value = "/image/{code}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/{code}/image", produces = MediaType.IMAGE_JPEG_VALUE)
     @Operation(summary = "Return picture")
     public ResponseEntity<byte[]> getImage(@PathVariable int code) {
         Optional<byte[]> imageByCode = stockRepository.findImageByCode(code);
@@ -109,4 +110,16 @@ public class StockController {
         Optional<Stock> stockOpt = stockRepository.findById(code);
         return stockOpt;
     }
+
+    @DeleteMapping(path = "/{code}")
+    @Operation(summary = "Delete stock product")
+    public ResponseEntity<Void> deleteStock(@PathVariable int code) {
+        try {
+            stockRepository.deleteById(code);
+            return ResponseEntity.ok().build();
+        } catch (EmptyResultDataAccessException ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

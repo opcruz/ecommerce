@@ -1,27 +1,24 @@
 package mx.ecommerce.services;
 
+import mx.ecommerce.dtos.OrderResultDTO;
+import mx.ecommerce.dtos.ProductOrderDTO;
+import mx.ecommerce.dtos.ShoppingCartJoined;
 import mx.ecommerce.models.Order;
 import mx.ecommerce.models.OrderDetails;
-import mx.ecommerce.models.ShoppingCart;
-import mx.ecommerce.models.Stock;
 import mx.ecommerce.repositories.OrderDetailsRepository;
 import mx.ecommerce.repositories.OrderRepository;
 import mx.ecommerce.repositories.ShoppingCartRepository;
-import mx.ecommerce.repositories.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService {
-
-    private StockRepository stockRepository;
 
     private OrderRepository orderRepository;
 
@@ -29,31 +26,37 @@ public class OrderService {
 
     private ShoppingCartRepository shoppingCartRepository;
 
+    public OrderService(@Autowired OrderRepository orderRepository,
+                        @Autowired OrderDetailsRepository orderDetailsRepository,
+                        @Autowired ShoppingCartRepository shoppingCartRepository) {
+        this.orderRepository = orderRepository;
+        this.orderDetailsRepository = orderDetailsRepository;
+        this.shoppingCartRepository = shoppingCartRepository;
+    }
+
 
     @Transactional(rollbackFor = {SQLException.class})
-    public Order test(int clientId) {
-        shoppingCartRepository.findAll().forEach(x -> {
-            System.out.println(x);
-        });
-        Iterable<ShoppingCart> shoppingCarts = shoppingCartRepository.filterByClientId(clientId);
-//        shoppingCartRepository.deleteAll(shoppingCarts);
+    public Order generateOrder(int clientId, String payment_method) {
+        Iterable<ShoppingCartJoined> shoppingCartJList = shoppingCartRepository.filterByClientId(clientId);
 
-        float total = 0.0f;
-        for (ShoppingCart c : shoppingCarts) {
+        double total = 0.0f;
+        LinkedList<Integer> deletedCartIds = new LinkedList<>();
+        for (ShoppingCartJoined c : shoppingCartJList) {
             total += c.getQuantity() * c.getStock().getPrice();
+            deletedCartIds.add(c.getId());
         }
 
         Order o = new Order();
         o.setCreated_at(new Timestamp(System.currentTimeMillis()));
         o.setStatus("pagado");
-        o.setPayment_method("paypal");
+        o.setPayment_method(payment_method);
         o.setTotal(total);
         o.setClient_id(clientId);
         Order orderSaved = orderRepository.save(o);
 
         OrderDetails details;
         LinkedList<OrderDetails> list = new LinkedList<>();
-        for (ShoppingCart cart : shoppingCarts) {
+        for (ShoppingCartJoined cart : shoppingCartJList) {
             details = new OrderDetails();
             details.setOrder_id(orderSaved.getId());
             details.setProduct_code(cart.getStock().getCode());
@@ -62,59 +65,17 @@ public class OrderService {
             list.add(details);
         }
         orderDetailsRepository.saveAll(list);
+        shoppingCartRepository.deleteAllById(deletedCartIds);
         return orderSaved;
     }
 
-
-    public OrderService(@Autowired StockRepository stockRepository,
-                        @Autowired OrderRepository orderRepository,
-                        @Autowired OrderDetailsRepository orderDetailsRepository,
-                        @Autowired ShoppingCartRepository shoppingCartRepository) {
-        this.stockRepository = stockRepository;
-        this.orderRepository = orderRepository;
-        this.orderDetailsRepository = orderDetailsRepository;
-        this.shoppingCartRepository = shoppingCartRepository;
-    }
-
-    @Transactional(rollbackFor = {SQLException.class})
-    public void createOrder() throws SQLException {
-        Order o = new Order();
-        o.setCreated_at(new Timestamp(System.currentTimeMillis()));
-        o.setStatus("pagado");
-        o.setPayment_method("paypal");
-        o.setTotal(50.0f);
-        o.setClient_id(1);
-        Order orderSaved = orderRepository.save(o);
-
-        OrderDetails details = new OrderDetails();
-        details.setOrder_id(orderSaved.getId());
-        details.setProduct_code(1);
-        details.setQuantity(100);
-        details.setPrice(25.00);
-
-        OrderDetails details2 = new OrderDetails();
-        details2.setOrder_id(orderSaved.getId());
-        details2.setProduct_code(1);
-        details2.setQuantity(50);
-        details2.setPrice(16.00);
-//        throw new SQLException("Throwing exception for demoing Rollback!!!");
-        List<OrderDetails> orderDetails = Arrays.asList(details, details2);
-        System.out.println(orderDetails.size());
-        orderDetailsRepository.saveAll(orderDetails);
-    }
-
-    @Transactional(rollbackFor = {SQLException.class})
-    public void transaction() throws SQLException {
-        stockRepository.deleteById(48);
-        Stock k = new Stock();
-        k.setCategory("comida");
-        k.setColor("color");
-        k.setPrice(25.45);
-        k.setDescription("description");
-        k.setQuantity(89);
-        k.setStatus("status");
-//        throw new SQLException("Throwing exception for demoing Rollback!!!");
-        stockRepository.save(k);
+    public Optional<OrderResultDTO> orderDetails(int clientId, int orderId) {
+        Optional<Order> order = orderRepository.findByIdAndClientId(clientId, orderId);
+        return order.map(value -> {
+            Iterable<ProductOrderDTO> products = orderDetailsRepository.findByOrderId(value.getId());
+            return new OrderResultDTO(value.getId(), value.getStatus(), value.getPayment_method(),
+                    value.getTotal(), value.getCreated_at(), products);
+        });
     }
 
 }

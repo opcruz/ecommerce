@@ -1,12 +1,14 @@
 package mx.ecommerce.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity(name = "stock") // This tells Hibernate to make a table out of this class
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Stock {
 
     @Id

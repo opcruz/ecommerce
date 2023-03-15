@@ -11,9 +11,6 @@ import java.util.Optional;
 @Repository
 public interface StockRepository extends CrudRepository<Stock, Integer> {
 
-    @Query(value = "SELECT * FROM stock u WHERE u.color = :color LIMIT 1", nativeQuery = true)
-    Optional<Stock> findStockByColor(@Param("color") String color);
-
     @Query(value = "SELECT new mx.ecommerce.models.Stock(u.code, u.description, u.color, u.category, u.quantity, u.price, u.status) FROM stock u")
     Iterable<Stock> allWithoutImage();
 
