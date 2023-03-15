@@ -1,12 +1,12 @@
-package com.example.accessingdatamysql;
+package mx.ecommerce;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AccessingDataMysqlApplication {
+public class Main {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AccessingDataMysqlApplication.class, args);
+		SpringApplication.run(Main.class, args);
 	}
 }
