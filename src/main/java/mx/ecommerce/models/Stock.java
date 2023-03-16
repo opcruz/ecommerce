@@ -1,94 +1,109 @@
 package mx.ecommerce.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity(name = "stock") // This tells Hibernate to make a table out of this class
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Stock {
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Integer code;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer code;
 
-	private String description;
+    private String description;
 
-	@JsonIgnore
-	private byte[] image;
+    @JsonIgnore
+    private byte[] image;
 
-	private String color;
+    private String color;
 
-	private String category;
+    private String category;
 
-	private Integer quantity;
+    private Integer quantity;
 
-	private Double price;
+    private Double price;
 
-	private String status;
+    private String status;
 
-	public Integer getCode() {
-		return code;
-	}
+    public Stock() {
+    }
 
-	public void setCode(Integer code) {
-		this.code = code;
-	}
+    public Stock(Integer code, String description, String color, String category, Integer quantity, Double price, String status) {
+        this.code = code;
+        this.description = description;
+        this.color = color;
+        this.category = category;
+        this.quantity = quantity;
+        this.price = price;
+        this.status = status;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public Integer getCode() {
+        return code;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setCode(Integer code) {
+        this.code = code;
+    }
 
-	public byte[] getImage() {
-		return image;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setImage(byte[] image) {
-		this.image = image;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getColor() {
-		return color;
-	}
+    public byte[] getImage() {
+        return image;
+    }
 
-	public void setColor(String color) {
-		this.color = color;
-	}
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
 
-	public String getCategory() {
-		return category;
-	}
+    public String getColor() {
+        return color;
+    }
 
-	public void setCategory(String category) {
-		this.category = category;
-	}
+    public void setColor(String color) {
+        this.color = color;
+    }
 
-	public Integer getQuantity() {
-		return quantity;
-	}
+    public String getCategory() {
+        return category;
+    }
 
-	public void setQuantity(Integer quantity) {
-		this.quantity = quantity;
-	}
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
-	public Double getPrice() {
-		return price;
-	}
+    public Integer getQuantity() {
+        return quantity;
+    }
 
-	public void setPrice(Double price) {
-		this.price = price;
-	}
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public Double getPrice() {
+        return price;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
