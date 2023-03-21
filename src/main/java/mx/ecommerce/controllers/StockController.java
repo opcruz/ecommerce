@@ -1,12 +1,14 @@
 package mx.ecommerce.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import mx.ecommerce.models.Stock;
 import mx.ecommerce.repositories.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,8 +26,8 @@ public class StockController {
     }
 
     @GetMapping(path = "/list")
-    @Operation(summary = "List products")
-    public @ResponseBody Iterable<Stock> getAllStocks(@RequestParam(required = false) String searchPhrase) {
+    @Operation(summary = "List products", security = @SecurityRequirement(name = "bearerAuth"))
+    public @ResponseBody Iterable<Stock> getAllStocks(@RequestParam(required = false) String searchPhrase, Authentication authentication) {
         Iterable<Stock> result;
         if (searchPhrase == null || searchPhrase.isBlank()) {
             result = stockRepository.allWithoutImage();
@@ -36,7 +38,7 @@ public class StockController {
     }
 
     @GetMapping(value = "/{code}/image", produces = MediaType.IMAGE_JPEG_VALUE)
-    @Operation(summary = "Return picture")
+    @Operation(summary = "Return picture", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<byte[]> getImage(@PathVariable int code) {
         Optional<byte[]> imageByCode = stockRepository.findImageByCode(code);
 
@@ -47,7 +49,7 @@ public class StockController {
     }
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    @Operation(summary = "Add stock product")
+    @Operation(summary = "Add stock product", security = @SecurityRequirement(name = "bearerAuth"))
     public @ResponseBody Stock createStock(@RequestPart String description,
                                            @RequestPart(required = false) String color,
                                            @RequestPart String category,
@@ -75,7 +77,7 @@ public class StockController {
     }
 
     @PutMapping(path = "/{code}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    @Operation(summary = "Update stock product")
+    @Operation(summary = "Update stock product", security = @SecurityRequirement(name = "bearerAuth"))
     public @ResponseBody Stock updateStock(@PathVariable int code,
                                            @RequestPart String description,
                                            @RequestPart(required = false) String color,
@@ -105,14 +107,14 @@ public class StockController {
     }
 
     @GetMapping(path = "/{code}")
-    @Operation(summary = "Get stock product")
+    @Operation(summary = "Get stock product", security = @SecurityRequirement(name = "bearerAuth"))
     public @ResponseBody Optional<Stock> getStock(@PathVariable int code) {
         Optional<Stock> stockOpt = stockRepository.findById(code);
         return stockOpt;
     }
 
     @DeleteMapping(path = "/{code}")
-    @Operation(summary = "Delete stock product")
+    @Operation(summary = "Delete stock product", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<Void> deleteStock(@PathVariable int code) {
         try {
             stockRepository.deleteById(code);
