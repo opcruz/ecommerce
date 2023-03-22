@@ -54,7 +54,6 @@ public class UserController {
         md.update(body.getPassword().getBytes());
         String passwordHash = DatatypeConverter
                 .printHexBinary(md.digest()).toUpperCase();
-        System.out.println(passwordHash);
         return employeeRepository.loginEmployee(body.getEmail(), passwordHash).map(employee -> {
             String token = getJWTToken(body.getEmail(), "employee", employee.getId());
             LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
@@ -72,7 +71,6 @@ public class UserController {
         md.update(body.getPassword().getBytes());
         String passwordHash = DatatypeConverter
                 .printHexBinary(md.digest()).toUpperCase();
-        System.out.println(passwordHash);
         return clientRepository.loginClient(body.getEmail(), passwordHash).map(client -> {
             String token = getJWTToken(body.getEmail(), "client", client.getId());
             LoginResponseDTO loginResponseDTO = new LoginResponseDTO();

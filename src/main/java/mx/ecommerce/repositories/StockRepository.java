@@ -11,11 +11,12 @@ import java.util.Optional;
 @Repository
 public interface StockRepository extends CrudRepository<Stock, Integer> {
 
-    @Query(value = "SELECT new mx.ecommerce.models.Stock(u.code, u.description, u.color, u.category, u.quantity, u.price, u.status) FROM stock u")
+    @Query(value = "SELECT new mx.ecommerce.models.Stock(u.code, u.description, u.color, u.category, u.quantity, u.price," +
+            " u.status, u.created_by, u.updated_by) FROM stock u")
     Iterable<Stock> allWithoutImage();
 
-    @Query(value = "SELECT new mx.ecommerce.models.Stock(u.code, u.description, u.color, u.category, u.quantity, u.price, u.status)" +
-            " FROM stock u WHERE u.description LIKE %:phrase%")
+    @Query(value = "SELECT new mx.ecommerce.models.Stock(u.code, u.description, u.color, u.category, u.quantity, u.price," +
+            " u.status, u.created_by, u.updated_by) FROM stock u WHERE u.description LIKE %:phrase%")
     Iterable<Stock> findByName(@Param("phrase") String phrase);
 
     @Query(value = "SELECT u.image FROM stock u WHERE u.code = :code")

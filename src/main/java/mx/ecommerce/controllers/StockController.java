@@ -1,5 +1,6 @@
 package mx.ecommerce.controllers;
 
+import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import mx.ecommerce.models.Stock;
@@ -56,7 +57,9 @@ public class StockController {
                                            @RequestPart String price,
                                            @RequestPart String quantity,
                                            @RequestPart String status,
-                                           @RequestPart(required = false) MultipartFile image) {
+                                           @RequestPart(required = false) MultipartFile image,
+                                           Authentication auth) {
+        Integer clientId = ((Claims) auth.getDetails()).get("userId", Integer.class);
         Stock k = new Stock();
         k.setCategory(category);
         k.setColor(color);
@@ -64,6 +67,8 @@ public class StockController {
         k.setDescription(description);
         k.setQuantity(Integer.parseInt(quantity));
         k.setStatus(status);
+        k.setUpdated_by(clientId);
+        k.setCreated_by(clientId);
 
         if (image != null) {
             try {
@@ -78,32 +83,32 @@ public class StockController {
 
     @PutMapping(path = "/{code}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "Update stock product", security = @SecurityRequirement(name = "bearerAuth"))
-    public @ResponseBody Stock updateStock(@PathVariable int code,
-                                           @RequestPart String description,
-                                           @RequestPart(required = false) String color,
-                                           @RequestPart String category,
-                                           @RequestPart String price,
-                                           @RequestPart String quantity,
-                                           @RequestPart String status,
-                                           @RequestPart(required = false) MultipartFile image) {
-        Stock k = new Stock();
-        k.setCode(code);
-        k.setCategory(category);
-        k.setColor(color);
-        k.setPrice(Double.parseDouble(price));
-        k.setDescription(description);
-        k.setQuantity(Integer.parseInt(quantity));
-        k.setStatus(status);
+    public ResponseEntity<Stock> updateStock(@PathVariable int code,
+                                             @RequestPart String description,
+                                             @RequestPart(required = false) String color,
+                                             @RequestPart String category,
+                                             @RequestPart String price,
+                                             @RequestPart String quantity,
+                                             @RequestPart String status,
+                                             @RequestPart(required = false) MultipartFile image,
+                                             Authentication auth) {
 
-        if (image != null) {
-            try {
-                k.setImage(image.getBytes());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        Stock updated = stockRepository.save(k);
-        return updated;
+        Integer clientId = ((Claims) auth.getDetails()).get("userId", Integer.class);
+
+        return
+                stockRepository.findById(code).map(stock -> {
+                    stock.setCategory(category);
+                    stock.setColor(color);
+                    stock.setPrice(Double.parseDouble(price));
+                    stock.setDescription(description);
+                    stock.setQuantity(Integer.parseInt(quantity));
+                    stock.setStatus(status);
+                    stock.setUpdated_by(clientId);
+                    stockRepository.save(stock);
+                    return stock;
+                }).map(result -> ResponseEntity.ok().body(result)
+                ).orElse(ResponseEntity.notFound().build());
+
     }
 
     @GetMapping(path = "/{code}")

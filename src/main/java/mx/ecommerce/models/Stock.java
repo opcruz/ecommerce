@@ -30,10 +30,15 @@ public class Stock {
 
     private String status;
 
+    private Integer created_by;
+
+    private Integer updated_by;
+
     public Stock() {
     }
 
-    public Stock(Integer code, String description, String color, String category, Integer quantity, Double price, String status) {
+    public Stock(Integer code, String description, String color, String category, Integer quantity,
+                 Double price, String status, Integer created_by, Integer updated_by) {
         this.code = code;
         this.description = description;
         this.color = color;
@@ -41,6 +46,8 @@ public class Stock {
         this.quantity = quantity;
         this.price = price;
         this.status = status;
+        this.created_by = created_by;
+        this.updated_by = updated_by;
     }
 
     public Integer getCode() {
@@ -105,5 +112,21 @@ public class Stock {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getCreated_by() {
+        return created_by;
+    }
+
+    public void setCreated_by(Integer created_by) {
+        this.created_by = created_by;
+    }
+
+    public Integer getUpdated_by() {
+        return updated_by;
+    }
+
+    public void setUpdated_by(Integer updated_by) {
+        this.updated_by = updated_by;
     }
 }
