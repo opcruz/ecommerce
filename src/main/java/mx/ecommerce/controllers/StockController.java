@@ -60,25 +60,26 @@ public class StockController {
                                            @RequestPart(required = false) MultipartFile image,
                                            Authentication auth) {
         Integer clientId = ((Claims) auth.getDetails()).get("userId", Integer.class);
-        Stock k = new Stock();
-        k.setCategory(category);
-        k.setColor(color);
-        k.setPrice(Double.parseDouble(price));
-        k.setDescription(description);
-        k.setQuantity(Integer.parseInt(quantity));
-        k.setStatus(status);
-        k.setUpdated_by(clientId);
-        k.setCreated_by(clientId);
+        Stock newStock =
+                Stock.builder()
+                        .description(description)
+                        .color(color)
+                        .category(category)
+                        .status(status)
+                        .price(Double.parseDouble(price))
+                        .quantity(Integer.parseInt(quantity))
+                        .updated_by(clientId)
+                        .created_by(clientId)
+                        .build();
 
         if (image != null) {
             try {
-                k.setImage(image.getBytes());
+                newStock.setImage(image.getBytes());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        Stock saved = stockRepository.save(k);
-        return saved;
+        return stockRepository.save(newStock);
     }
 
     @PutMapping(path = "/{code}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})

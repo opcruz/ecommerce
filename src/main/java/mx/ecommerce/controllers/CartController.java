@@ -44,19 +44,25 @@ public class CartController {
         Integer clientId = ((Claims) auth.getDetails()).get("userId", Integer.class);
         Iterable<ShoppingCartJoined> shoppingCarts = shoppingCartRepository.filterByClientId(clientId);
 
-        ShoppingCartResultDTO result = new ShoppingCartResultDTO();
-        result.setClientId(clientId);
+        ShoppingCartResultDTO.ShoppingCartResultDTOBuilder builder = ShoppingCartResultDTO.builder();
+        builder.clientId(clientId);
 
         double total = 0.0;
         LinkedList<ProductCartDTO> productsCart = new LinkedList<>();
-        for (ShoppingCartJoined c : shoppingCarts) {
-            total += c.getQuantity() * c.getStock().getPrice();
-            productsCart.add(new ProductCartDTO(c.getId(), c.getQuantity(), c.getStock()));
+        for (ShoppingCartJoined productCart : shoppingCarts) {
+            total += productCart.getQuantity() * productCart.getStock().getPrice();
+            productsCart.add(
+                    ProductCartDTO.builder()
+                            .cartId(productCart.getId())
+                            .quantity(productCart.getQuantity())
+                            .stock(productCart.getStock())
+                            .build()
+            );
         }
-        result.setTotal(total);
-        result.setProducts(productsCart);
+        builder.total(total);
+        builder.products(productsCart);
 
-        return result;
+        return builder.build();
     }
 
     @DeleteMapping(path = "/{cartId}")

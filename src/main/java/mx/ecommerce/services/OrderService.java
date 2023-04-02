@@ -73,8 +73,14 @@ public class OrderService {
         Optional<Order> order = orderRepository.findByIdAndClientId(clientId, orderId);
         return order.map(value -> {
             Iterable<ProductOrderDTO> products = orderDetailsRepository.findByOrderId(value.getId());
-            return new OrderResultDTO(value.getId(), value.getStatus(), value.getPayment_method(),
-                    value.getTotal(), value.getCreated_at(), products);
+            return OrderResultDTO.builder()
+                    .id(value.getId())
+                    .status(value.getStatus())
+                    .paymentMethod(value.getPayment_method())
+                    .total(value.getTotal())
+                    .createdAt(value.getCreated_at())
+                    .products(products)
+                    .build();
         });
     }
 

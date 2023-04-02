@@ -4,8 +4,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Entity(name = "order_details") // This tells Hibernate to make a table out of this class
+@Entity(name = "order_details")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderDetails {
 
     @Id
@@ -20,44 +28,4 @@ public class OrderDetails {
 
     private Double price;
 
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getOrder_id() {
-        return order_id;
-    }
-
-    public void setOrder_id(Integer order_id) {
-        this.order_id = order_id;
-    }
-
-    public Integer getProduct_code() {
-        return product_code;
-    }
-
-    public void setProduct_code(Integer product_code) {
-        this.product_code = product_code;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
 }
