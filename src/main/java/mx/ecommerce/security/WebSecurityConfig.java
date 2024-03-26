@@ -24,7 +24,7 @@ class WebSecurityConfig {
                 .authorizeHttpRequests(d -> d.requestMatchers(HttpMethod.DELETE, "/stocks/**").hasAuthority("employee"))
                 .authorizeHttpRequests(d -> d.requestMatchers("/carts/**").hasAuthority("client"))
                 .authorizeHttpRequests(d -> d.requestMatchers("/orders/**").hasAuthority("client"))
-                .authorizeHttpRequests(d -> d.anyRequest().authenticated());
+                .authorizeHttpRequests(d -> d.anyRequest().permitAll());
 
         return http.build();
     }

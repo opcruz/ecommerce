@@ -28,7 +28,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             if (existJWTToken(request, response)) {
                 Claims claims = validateToken(request);
                 if (claims.get("authorities") != null) {
-                    setUpSpringAuthentication(claims);
+                    setupspringauthentication(claims);
                 } else {
                     SecurityContextHolder.clearContext();
                 }
@@ -52,7 +52,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
      *
      * @param claims
      */
-    private void setUpSpringAuthentication(Claims claims) {
+    private void setupspringauthentication(Claims claims) {
         @SuppressWarnings("unchecked")
         List<String> authorities = (List<String>) claims.get("authorities");
 
